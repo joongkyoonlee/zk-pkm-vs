@@ -1,13 +1,26 @@
 import { SUPABASE_ENV_OK } from "@/lib/supabase";
 
-if (!SUPABASE_ENV_OK) {
+export default function App() {
+  if (!SUPABASE_ENV_OK) {
+    return (
+      <div style={{ padding: 24 }}>
+        <h2>Supabase 환경변수가 설정되지 않았습니다.</h2>
+        <p>
+          GitHub Actions workflow에서 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY를
+          빌드 env로 주입해야 합니다.
+        </p>
+      </div>
+    );
+  }
+
+  // 기존 App 내용 그대로 (Router, Routes 등)
   return (
-    <div style={{ padding: 24 }}>
-      <h2>Supabase 환경변수가 설정되지 않았습니다.</h2>
-      <p>GitHub Actions workflow에서 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY를 빌드 env로 주입해야 합니다.</p>
-    </div>
+    <>
+      {/* 기존 JSX */}
+    </>
   );
 }
+
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider } from '@/lib/auth'
