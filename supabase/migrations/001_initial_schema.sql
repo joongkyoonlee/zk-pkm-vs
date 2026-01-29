@@ -49,6 +49,11 @@ ALTER TABLE note_links ENABLE ROW LEVEL SECURITY;
 ALTER TABLE note_embeddings ENABLE ROW LEVEL SECURITY;
 
 -- RLS policies for notes
+DROP POLICY IF EXISTS "Users can view their own notes" ON notes;
+DROP POLICY IF EXISTS "Users can insert their own notes" ON notes;
+DROP POLICY IF EXISTS "Users can update their own notes" ON notes;
+DROP POLICY IF EXISTS "Users can delete their own notes" ON notes;
+
 CREATE POLICY "Users can view their own notes"
   ON notes FOR SELECT USING (auth.uid() = user_id);
 
@@ -62,6 +67,11 @@ CREATE POLICY "Users can delete their own notes"
   ON notes FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS policies for note_tags
+DROP POLICY IF EXISTS "Users can view tags for their notes" ON note_tags;
+DROP POLICY IF EXISTS "Users can manage tags for their notes" ON note_tags;
+DROP POLICY IF EXISTS "Users can update tags for their notes" ON note_tags;
+DROP POLICY IF EXISTS "Users can delete tags for their notes" ON note_tags;
+
 CREATE POLICY "Users can view tags for their notes"
   ON note_tags FOR SELECT USING (
     note_id IN (SELECT id FROM notes WHERE user_id = auth.uid())
@@ -83,6 +93,9 @@ CREATE POLICY "Users can delete tags for their notes"
   );
 
 -- RLS policies for note_links
+DROP POLICY IF EXISTS "Users can view links for their notes" ON note_links;
+DROP POLICY IF EXISTS "Users can manage links for their notes" ON note_links;
+
 CREATE POLICY "Users can view links for their notes"
   ON note_links FOR SELECT USING (
     from_note_id IN (SELECT id FROM notes WHERE user_id = auth.uid())
@@ -94,8 +107,8 @@ CREATE POLICY "Users can manage links for their notes"
   );
 
 -- Create indexes
-CREATE INDEX idx_notes_user_id ON notes(user_id);
-CREATE INDEX idx_note_tags_note_id ON note_tags(note_id);
-CREATE INDEX idx_note_links_from ON note_links(from_note_id);
-CREATE INDEX idx_note_links_to ON note_links(to_note_id);
-CREATE INDEX idx_note_embeddings_embedding ON note_embeddings USING ivfflat (embedding vector_cosine_ops);
+CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
+CREATE INDEX IF NOT EXISTS idx_note_tags_note_id ON note_tags(note_id);
+CREATE INDEX IF NOT EXISTS idx_note_links_from ON note_links(from_note_id);
+CREATE INDEX IF NOT EXISTS idx_note_links_to ON note_links(to_note_id);
+CREATE INDEX IF NOT EXISTS idx_note_embeddings_embedding ON note_embeddings USING ivfflat (embedding vector_cosine_ops);
