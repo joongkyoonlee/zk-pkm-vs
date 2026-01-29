@@ -1,20 +1,30 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SUPABASE_ENV_OK } from "@/lib/supabase";
 import "@/styles/globals.css";
 
-// 아래는 예시입니다. 선생님 프로젝트에 맞는 페이지 컴포넌트로 바꾸세요.
-// import Home from "@/pages/Home";
-// import Login from "@/pages/Login";
-// import Graph from "@/pages/Graph";
+// 아래 3개 import는 선생님 프로젝트 경로/이름에 맞게 조정하세요.
+import Home from "@/pages/Home";
+import Login from "@/pages/Login";
+import Graph from "@/pages/Graph";
 
 export default function App() {
   if (!SUPABASE_ENV_OK) {
     return (
-      <div style={{ padding: 24 }}>
+      <div style={{ padding: 24, fontFamily: "system-ui, -apple-system, Segoe UI, Roboto" }}>
         <h2>Supabase 환경변수가 설정되지 않았습니다.</h2>
-        <p>
-          GitHub Actions workflow에서 VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY를
-          빌드 env로 주입해야 합니다.
+        <p style={{ lineHeight: 1.6 }}>
+          GitHub Actions 빌드 시점에 아래 값이 주입되어야 합니다.
+          <br />
+          - VITE_SUPABASE_URL
+          <br />
+          - VITE_SUPABASE_ANON_KEY
+        </p>
+        <p style={{ lineHeight: 1.6 }}>
+          GitHub → Settings → Secrets and variables → Actions 에서
+          <br />
+          Variables: VITE_SUPABASE_URL
+          <br />
+          Secrets: VITE_SUPABASE_ANON_KEY
         </p>
       </div>
     );
@@ -23,10 +33,10 @@ export default function App() {
   return (
     <HashRouter>
       <Routes>
-        {/* 선생님 프로젝트 라우트로 교체 */}
-        {/* <Route path="/" element={<Home />} /> */}
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/graph" element={<Graph />} /> */}
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/graph" element={<Graph />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>
   );

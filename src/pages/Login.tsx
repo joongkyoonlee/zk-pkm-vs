@@ -1,87 +1,59 @@
-import { useState } from 'react'
-import { useAuth } from '@/lib/auth'
-import { useNavigate } from 'react-router-dom'
+import { useState } from "react";
+import { signInWithPassword, signUpWithPassword } from "@/lib/auth";
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const { signIn, signUp } = useAuth()
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [msg, setMsg] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    try {
-      if (isSignUp) {
-        await signUp(email, password)
-      } else {
-        await signIn(email, password)
-      }
-      navigate('/')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '오류가 발생했습니다')
-    } finally {
-      setLoading(false)
+  const onLogin = async () => {
+    setMsg("");
+    const res = await signInWithPassword(email, password);
+    if (!res.ok) {
+      setMsg(res.message);
+      return;
     }
-  }
+    location.hash = "#/";
+  };
+
+  const onSignup = async () => {
+    setMsg("");
+    const res = await signUpWithPassword(email, password);
+    if (!res.ok) {
+      setMsg(res.message);
+      return;
+    }
+    setMsg("회원가입 요청이 처리되었습니다. 이메일 인증이 필요할 수 있습니다.");
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary to-accent flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-center mb-2 text-gray-900">ZK Assistant</h1>
-        <p className="text-center text-gray-600 mb-8">지식의 숨겨진 연결고리를 발견하세요</p>
+    <div style={{ padding: 24, maxWidth: 520 }}>
+      <h2>로그인</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            placeholder="이메일"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            required
-          />
+      <div style={{ display: "grid", gap: 12, marginTop: 16 }}>
+        <input
+          placeholder="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ padding: 12, fontSize: 16 }}
+        />
+        <input
+          placeholder="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ padding: 12, fontSize: 16 }}
+        />
 
-          <input
-            type="password"
-            placeholder="비밀번호"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            required
-          />
+        {msg ? <div style={{ color: "crimson" }}>{msg}</div> : null}
 
-          {error && <p className="text-danger text-sm">{error}</p>}
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-primary text-white py-2 rounded-lg font-semibold hover:bg-opacity-90 transition disabled:opacity-50"
-          >
-            {loading ? '진행 중...' : isSignUp ? '회원가입' : '로그인'}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-gray-600 text-sm">
-            {isSignUp ? '이미 계정이 있으신가요?' : '계정이 없으신가요?'}
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp)
-                setError('')
-              }}
-              className="ml-1 text-primary font-semibold hover:underline"
-            >
-              {isSignUp ? '로그인' : '회원가입'}
-            </button>
-          </p>
-        </div>
+        <button onClick={onLogin} style={{ padding: 12, fontSize: 16 }}>
+          로그인
+        </button>
+        <button onClick={onSignup} style={{ padding: 12, fontSize: 16 }}>
+          회원가입
+        </button>
       </div>
     </div>
-  )
+  );
 }
