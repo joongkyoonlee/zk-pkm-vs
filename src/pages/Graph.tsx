@@ -27,7 +27,10 @@ export default function Graph() {
         .select('id, title, content, source')
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error("Supabase query error:", error);
+        throw new Error(error.message || "Supabase query failed");
+      }
 
       const notesList = data as (Note & { source: string })[]
       setNotes(notesList)

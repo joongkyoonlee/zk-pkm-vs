@@ -48,7 +48,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
+    if (error) {
+      console.error("Auth error:", error);
+      throw new Error(error.message || "Auth failed"); // 메시지 보장
+    }
   }
 
   const signUp = async (email: string, password: string) => {
